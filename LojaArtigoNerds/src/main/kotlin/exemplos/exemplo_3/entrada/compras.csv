@@ -1,0 +1,16 @@
+Código,Quantidade,Nome do produto,Preço de compra,Preço de venda,Categoria,Tipo,Tamanho,Cor primaria,Cor secundário,Versão,Ano de fabricação,Material de fabricação,Relevância
+CAMYO,13,Camisa mestre yoda,22.35,41.5,roupa,camisa,GG,preto,vermelho,-,-,-,-
+CANMAR,20,Caneca do Mario Bros,12.57,25,colecionavel,outros,-,-,-,-,-,outros,comum
+PLAY5,5,Playstation 5,3000,4500,eletronico,video-game,-,-,-,1,2022,-,-
+GOKU1,5,Action figure Goku,35.33,70,colecionavel,boneco,15,-,-,-,-,plastico,medio
+MARKAR,5,Jogo mario kart,189.9,250,eletronico,jogo,-,-,-,2,2021,-,-
+SANE1,15,O senhor dos aneis 1,35,50,colecionavel,livro,-,-,-,-,-,papel,comum
+CAMRICM,20,Camisa rick and morty,28.3,51.5,roupa,camisa,M,azul,amarelo,-,-,-,-
+CAMRICG,20,Camisa rick and morty,28.3,51.5,roupa,camisa,G,azul,amarelo,-,-,-,-
+CANEBAT,10,Caneta do batman,22.9,33.9,colecionavel,outros,-,-,-,-,-,outros,raro
+SANE2,15,O senhor dos aneis 2,35,50,colecionavel,livro,-,-,-,-,-,papel,comum
+HOBB,15,O Hobbit,20,40,colecionavel,livro,-,-,-,-,-,papel,comum
+GOT1,10,Cronicas de gelo e fogo 1,29.9,36.1,colecionavel,livro,-,-,-,-,-,papel,comum
+FUNCAND1,10,Funko Cassian Andor,56.9,101.5,colecionavel,boneco,19,-,-,-,-,plastico,raro
+K2SO1,10,Busto K2SO,101.5,953.9,colecionavel,boneco,56,-,-,-,-,misturado,rarissimo
+DELO1,10,Delorian de volta para o futuro,250.3,2550.9,colecionavel,outros,96,-,-,-,-,aco,rarissimo
