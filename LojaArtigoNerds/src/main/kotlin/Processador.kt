@@ -3,10 +3,8 @@ package org.example
 import ItemEstoque
 import java.text.Normalizer
 
-// --- Funções Auxiliares de Processamento ---
-
 /**
- * Remove acentos de uma string.
+ * Remove acentos de uma string, conforme regra do projeto.
  */
 private fun String.semAcentos(): String {
     val normalizado = Normalizer.normalize(this, Normalizer.Form.NFD)
@@ -23,26 +21,34 @@ private fun processarCampoOpcional(valor: String): String? {
     return if (valorProcessado == "-") null else valorProcessado
 }
 
+/**
+ * Processa um campo numérico (Int) que pode ser "-".
+ * Se for "-", retorna 0. Caso contrário, converte para Int.
+ */
+private fun processarCampoNumerico(valor: String): Int {
+    // Remove espaços em branco que podem vir do CSV antes de checar
+    return if (valor.trim() == "-") 0 else valor.trim().toInt()
+}
+
+/**
+ * Processa a string para ser usada em um Enum.valueOf().
+ * Remove acentos, coloca em maiúsculo e substitui hífens por underscores.
+ */
+private fun String.paraEnum(): String {
+    return this.semAcentos().uppercase().replace("-", "_")
+}
+
 // --- Funções Principais de Parsing ---
 
 /**
  * Processa a lista de linhas do CSV de compras.
- *
- * @param linhas Lista de strings, onde cada uma é uma linha do compras.csv.
- * @return Uma lista de Pares, contendo o objeto Produto e a quantidade comprada.
  */
 fun processarCompras(linhas: List<String>): List<Pair<Produto, Int>> {
-    // Pula a primeira linha (cabeçalho) com .drop(1)
-    // Usa mapNotNull para processar cada linha e descartar
-    // qualquer uma que falhe no parsing (retornando null)
     return linhas.drop(1).mapNotNull { linha ->
         try {
-            // Tenta fazer o parse da linha
             parseLinhaCompra(linha)
         } catch (e: Exception) {
-            // Se falhar (ex: Enum não encontrado, erro de .toInt()),
-            // imprime um erro e retorna null para essa linha
-            println("ERRO: Falha ao processar linha de compra: '$linha'. Causa: ${e.message}")
+            logDebug("ERRO: Falha ao processar linha de compra: '$linha'. Causa: ${e.message}")
             null
         }
     }
@@ -50,64 +56,68 @@ fun processarCompras(linhas: List<String>): List<Pair<Produto, Int>> {
 
 /**
  * Converte uma única linha de String em um objeto Produto e sua quantidade.
- * Esta função é baseada na ordem das colunas do seu 'compras.csv'.
  */
 private fun parseLinhaCompra(csvLine: String): Pair<Produto, Int> {
-    // Regra: Transformar entradas para maiúsculo [cite: 94]
+    // Regra: Transformar entradas para maiúsculo
     val campos = csvLine.uppercase().split(",")
 
-    // --- Colunas Comuns (Baseado no seu compras.csv) ---
-    // [0]CATEGORIA, [1]NOME, [2]PRECO_COMPRA, [3]PRECO_VENDA, [4]CODIGO, [5]QUANTIDADE
-    val categoria = campos[0]
-    val nome = campos[1].semAcentos()
-    val precoCompra = campos[2].toDouble()
-    val precoVenda = campos[3].toDouble()
-    val codigoOriginal = campos[4]
-    val quantidade = campos[5].toInt()
+    // --- Colunas Comuns (Baseado nos seus logs de erro) ---
+    // [0]CODIGO, [1]QUANTIDADE, [2]NOME, [3]PRECO_COMPRA, [4]PRECO_VENDA, [5]CATEGORIA
+    val codigoOriginal = campos[0]
+    val quantidade = campos[1].toInt()
+    val nome = campos[2].semAcentos()
+    val precoCompra = campos[3].toDouble()
+    val precoVenda = campos[4].toDouble()
+    val categoria = campos[5].semAcentos()
 
     val produto: Produto = when (categoria) {
         "ROUPA" -> {
-            // Colunas: [6]ATTR_1=Tipo, [7]ATTR_2=Tamanho, [8]ATTR_3=Cor1, [9]ATTR_4=Cor2
+            // Colunas: [6]Tipo, [7]Tamanho, [8]Cor1, [9]Cor2
             Roupa().apply {
                 this.nome = nome
                 this.precoComprado = precoCompra
                 this.precoVendido = precoVenda
                 this.codigoOriginal = codigoOriginal
-                this.codigoFormatado = "R-$codigoOriginal" // [cite: 38]
+                this.codigoFormatado = "R-$codigoOriginal"
+
                 // Atributos específicos
-                this.tipo = Roupa.Tipo.valueOf(campos[6].semAcentos())
-                this.tamanho = Roupa.Tamanho.valueOf(campos[7].semAcentos())
+                this.tipo = Roupa.Tipo.valueOf(campos[6].paraEnum())
+                this.tamanho = Roupa.Tamanho.valueOf(campos[7].paraEnum())
                 this.corPrimaria = campos[8].semAcentos()
-                this.corSecundaria = processarCampoOpcional(campos[9]) // Trata o "-"
+                this.corSecundaria = processarCampoOpcional(campos[9])
             }
         }
         "ELETRONICO" -> {
-            // Colunas: [6]ATTR_1=Tipo, [7]ATTR_2=Versao, [8]ATTR_3=Ano
+            // Colunas: [6]Tipo, [10]Versao, [11]Ano
             Eletronico().apply {
                 this.nome = nome
                 this.precoComprado = precoCompra
                 this.precoVendido = precoVenda
                 this.codigoOriginal = codigoOriginal
-                this.codigoFormatado = "E-$codigoOriginal" // [cite: 38]
+                this.codigoFormatado = "E-$codigoOriginal"
+
                 // Atributos específicos
-                this.tipo = Eletronico.Tipo.valueOf(campos[6].semAcentos())
-                this.versao = processarCampoOpcional(campos[7]) ?: "" // Se for "-", vira null, e o elvis ?: "" garante que seja uma String não-nula, como a classe espera
-                this.anoDeFabricacao = campos[8].toInt()
+                this.tipo = Eletronico.Tipo.valueOf(campos[6].paraEnum())
+                this.versao = processarCampoOpcional(campos[10]) ?: ""
+                // CORREÇÃO: Usando processarCampoNumerico
+                this.anoDeFabricacao = processarCampoNumerico(campos[11])
             }
         }
         "COLECIONAVEL" -> {
-            // Colunas: [6]ATTR_1=Tipo, [7]ATTR_2=Material, [8]ATTR_3=Tamanho, [9]ATTR_4=Relevancia
+            // Colunas: [6]Tipo, [7]Tamanho, [12]Material, [13]Relevancia
             Colecionavel().apply {
                 this.nome = nome
                 this.precoComprado = precoCompra
                 this.precoVendido = precoVenda
                 this.codigoOriginal = codigoOriginal
-                this.codigoFormatado = "C-$codigoOriginal" // [cite: 38]
+                this.codigoFormatado = "C-$codigoOriginal"
+
                 // Atributos específicos
-                this.tipo = Colecionavel.Tipo.valueOf(campos[6].semAcentos())
-                this.materialFabricacao = Colecionavel.MaterialFabricacao.valueOf(campos[7].semAcentos())
-                this.tamanhoEmCentimetros = campos[8].toInt()
-                this.relevancia = Colecionavel.Relevancia.valueOf(campos[9].semAcentos())
+                this.tipo = Colecionavel.Tipo.valueOf(campos[6].paraEnum())
+                this.materialFabricacao = Colecionavel.MaterialFabricacao.valueOf(campos[12].paraEnum())
+                // CORREÇÃO: Usando processarCampoNumerico
+                this.tamanhoEmCentimetros = processarCampoNumerico(campos[7])
+                this.relevancia = Colecionavel.Relevancia.valueOf(campos[13].paraEnum())
             }
         }
         else -> throw IllegalArgumentException("Categoria desconhecida: $categoria")
@@ -120,11 +130,6 @@ private fun parseLinhaCompra(csvLine: String): Pair<Produto, Int> {
 /**
  * Cria o estoque consolidado processando a lista de compras e depois
  * aplicando (subtraindo) a lista de vendas.
- *
- * @param compras Lista de Pares (Produto, Quantidade) vinda do 'compras.csv'.
- * @param linhasVendas Lista de Strings (linhas) vinda do 'vendas.csv'[cite: 48].
- * @return Um Mapa onde a chave é o 'codigoFormatado' (ex: "R-RGL-001")
- * e o valor é o objeto 'ItemEstoque' (que contém o Produto e a qtd final).
  */
 fun consolidarEstoque(
     compras: List<Pair<Produto, Int>>,
@@ -134,53 +139,44 @@ fun consolidarEstoque(
     val estoque = mutableMapOf<String, ItemEstoque>()
 
     // 1. Processar todas as Compras
-    println("LOG: Processando ${compras.size} registros de compra...")
+    logDebug("LOG: Processando ${compras.size} registros de compra...")
     for ((produto, quantidadeComprada) in compras) {
         val chave = produto.codigoFormatado
-
         val itemExistente = estoque[chave]
 
         if (itemExistente != null) {
-            // Se o item já foi comprado antes, apenas soma a quantidade
             itemExistente.quantidade += quantidadeComprada
         } else {
-            // Se for a primeira vez, cria o novo ItemEstoque
             estoque[chave] = ItemEstoque(produto, quantidadeComprada)
         }
     }
-    println("LOG: Compras processadas. ${estoque.size} produtos únicos no estoque (antes das vendas).")
+    logDebug("LOG: Compras processadas. ${estoque.size} produtos únicos no estoque (antes das vendas).")
 
-
-    // 2. Criar um mapa de lookup para processar vendas
-    // O arquivo de vendas usa o CÓDIGO ORIGINAL (ex: "RGL-001") [cite: 48]
-    // Nosso estoque usa o CÓDIGO FORMATADO (ex: "R-RGL-001")
-    // Este mapa nos permite achar o "ItemEstoque" usando o código original.
-    val lookupPorCodigoOriginal = estoque.values.associateBy { it.produto.codigoOriginal }
-
-    // 3. Processar todas as Vendas
-    println("LOG: Processando ${linhasVendas.size - 1} registros de venda...")
+    // 2. Processar todas as Vendas
+    logDebug("LOG: Processando ${linhasVendas.size - 1} registros de venda...")
     for (linhaVenda in linhasVendas.drop(1)) { // Pula o cabeçalho
         try {
             val campos = linhaVenda.uppercase().split(",")
-            val codigoOriginalVenda = campos[0]
+
+            val codigoFormatadoVenda = campos[0]
             val quantidadeVendida = campos[1].toInt()
 
-            // Encontra o item no nosso estoque
-            val itemEmEstoque = lookupPorCodigoOriginal[codigoOriginalVenda]
+            // Procura o item diretamente no mapa de estoque principal
+            val itemEmEstoque = estoque[codigoFormatadoVenda]
 
             if (itemEmEstoque != null) {
-                // Subtrai a quantidade vendida
+                // Se encontrou, subtrai a quantidade
                 itemEmEstoque.quantidade -= quantidadeVendida
             } else {
-                // Venda de um item que nunca foi comprado?
-                println("AVISO: Venda registrada para o código '$codigoOriginalVenda', mas este item não existe no estoque de compras.")
+                // Se não encontrou, dispara o aviso (que agora será para itens que realmente não existem)
+                logDebug("AVISO: Venda registrada para o código '$codigoFormatadoVenda', mas este item não existe no estoque de compras.")
             }
         } catch (e: Exception) {
-            println("ERRO: Falha ao processar linha de venda: '$linhaVenda'. Causa: ${e.message}")
+            logDebug("ERRO: Falha ao processar linha de venda: '$linhaVenda'. Causa: ${e.message}")
         }
     }
-    println("LOG: Vendas processadas. Estoque consolidado finalizado.")
 
-    // Retorna o mapa como imutável
+    logDebug("LOG: Vendas processadas. Estoque consolidado finalizado.")
+
     return estoque
 }

@@ -1,13 +1,8 @@
 import org.example.consolidarEstoque
+import org.example.logDebug
 import org.example.processarCompras
 import java.io.File
 import kotlin.system.exitProcess
-
-/**
- * Constante global para controlar os logs de depuração.
- * Mude para 'false' para desativar todas as mensagens de depuração no terminal.
- */
-private const val MODO_DEBUG = true
 
 // O mapa do estoque consolidado.
 // Declarado aqui para ser acessível por outras funções (balancete, busca, etc.)
@@ -56,15 +51,6 @@ fun main (args: Array<String>){
     // TODO: 2. Gerenciamento de Estoque (Geração de arquivos)
     // TODO: 3. Balancete da Loja
     // TODO: 4. Sistema de Busca (Opcional)
-}
-
-/**
- * Imprime uma mensagem no console somente se o MODO_DEBUG estiver ativado.
- */
-private fun logDebug(mensagem: String) {
-    if (MODO_DEBUG) {
-        println(mensagem)
-    }
 }
 
 /**
