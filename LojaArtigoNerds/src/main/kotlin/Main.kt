@@ -1,3 +1,5 @@
+import org.example.consolidarEstoque
+import org.example.processarCompras
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -6,6 +8,10 @@ import kotlin.system.exitProcess
  * Mude para 'false' para desativar todas as mensagens de depuração no terminal.
  */
 private const val MODO_DEBUG = true
+
+// O mapa do estoque consolidado.
+// Declarado aqui para ser acessível por outras funções (balancete, busca, etc.)
+private lateinit var estoque: Map<String, ItemEstoque>
 
 fun main (args: Array<String>){
 
@@ -17,21 +23,39 @@ fun main (args: Array<String>){
     val caminhoCompras = "$pastaEntrada/compras.csv"
     val caminhoVendas = "$pastaEntrada/vendas.csv"
 
+    // --- Processamento de Compras ---
     logDebug("\nLendo arquivo de compras em: $caminhoCompras")
-    val compras = lerArquivoCsv (caminhoCompras)
-    if (compras.isNotEmpty()) {
-        logDebug("-> Sucesso! ${compras.size - 1} registros de compras encontrados.")
+    val linhasCompras = lerArquivoCsv (caminhoCompras)
+    var produtosComprados: List<Pair<org.example.Produto, Int>> = emptyList()
+
+    if (linhasCompras.isNotEmpty()) {
+        logDebug("-> Sucesso! ${linhasCompras.size - 1} registros de compras encontrados. Processando...")
+        produtosComprados = processarCompras(linhasCompras)
+    } else {
+        logDebug("-> Arquivo de compras vazio ou não encontrado.")
     }
 
-    // TODO: Implementar processamento das compras
-
+    // --- Processamento de Vendas ---
     logDebug("\nLendo arquivo de vendas em: $caminhoVendas")
-    val vendas : List<String> = lerArquivoCsv (caminhoVendas)
-    if (vendas.isNotEmpty()) {
-        logDebug("-> Sucesso! ${vendas.size - 1} registros de vendas encontrados.")
+    val linhasVendas : List<String> = lerArquivoCsv (caminhoVendas)
+    if (linhasVendas.isNotEmpty()) {
+        logDebug("-> Sucesso! ${linhasVendas.size - 1} registros de vendas encontrados.")
     }
 
-    // TODO: Implementar processamento das vendas
+    // 1. Gerenciamento de Compra e Venda
+    logDebug("\nConsolidando estoque a partir de compras e vendas...")
+    estoque = consolidarEstoque(produtosComprados, linhasVendas)
+
+    estoque.forEach { (codigo, item) ->
+        logDebug("   - [$codigo] ${item.produto.nome}: ${item.quantidade} unidades")
+    }
+    logDebug("-----------------------------------\n")
+    // --- FIM DA MODIFICAÇÃO ---
+
+
+    // TODO: 2. Gerenciamento de Estoque (Geração de arquivos)
+    // TODO: 3. Balancete da Loja
+    // TODO: 4. Sistema de Busca (Opcional)
 }
 
 /**
@@ -58,11 +82,6 @@ private fun validarEObterPastas(args: Array<String>): Pair<String, String> {
 /**
  * Lê um arquivo (como um CSV) a partir do caminho completo e retorna seu conteúdo
  * como uma lista de strings, onde cada string é uma linha do arquivo.
- *
- * @param caminhoDoArquivo O caminho completo para o arquivo.
- * @return Uma lista de strings (List<String>) com as linhas do arquivo.
- * Retorna uma lista vazia (emptyList) se o arquivo não for encontrado
- * ou se ocorrer um erro de leitura.
  */
 private fun lerArquivoCsv(caminhoDoArquivo: String): List<String> {
     val arquivo = File(caminhoDoArquivo)
@@ -74,8 +93,6 @@ private fun lerArquivoCsv(caminhoDoArquivo: String): List<String> {
     }
 
     return try {
-        // 'readLines()' é uma função do Kotlin que lê todas as linhas
-        // do arquivo e já as retorna como List<String>
         arquivo.readLines()
     } catch (e: SecurityException) {
         println("ERRO: Sem permissão para ler o arquivo: ${e.message}")
