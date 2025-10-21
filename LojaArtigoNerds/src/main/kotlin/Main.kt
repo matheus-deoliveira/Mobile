@@ -41,8 +41,11 @@ fun main (args: Array<String>){
         logDebug("   - [$codigo] ${item.produto.nome}: ${item.quantidade} unidades")
     }
 
-    // Gerenciamento de Estoque
-    gerenciadorEstoque.salvarEstoqueConsolidado(estoque, pastaSaida)
+    // Gerenciamento de Estoque Geral
+    gerenciadorEstoque.salvarEstoqueGeral(estoque, pastaSaida)
+
+    // Gerenciamento de Estoque por Categoria
+    gerenciadorEstoque.salvarEstoquePorCategoria(estoque, pastaSaida)
 
     // TODO: Balancete da Loja
     // TODO: Sistema de Busca
@@ -57,5 +60,5 @@ private fun validarEObterPastas(args: Array<String>): Pair<String, String> {
         println("ERRO: Argumentos insuficientes.")
         exitProcess(1)
     }
-    return Pair(args[0], args[1]) // Retorna a pasta de entrada e saída
+    return Pair(args[0], args[1])
 }

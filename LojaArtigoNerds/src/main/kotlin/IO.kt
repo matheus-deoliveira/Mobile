@@ -2,7 +2,7 @@ import java.io.File
 
 /**
  * Lê um arquivo (como um CSV) a partir do caminho completo e retorna seu conteúdo
- * como uma lista de strings, onde cada string é uma linha do arquivo.
+ * como uma List<String>, onde cada string é uma linha do arquivo.
  */
 internal fun lerArquivoCsv(caminhoDoArquivo: String): List<String> {
     val arquivo = File(caminhoDoArquivo)
@@ -26,7 +26,7 @@ internal fun lerArquivoCsv(caminhoDoArquivo: String): List<String> {
 
 /**
  * Escreve um conteúdo de string em um arquivo no caminho especificado.
- * Cria o arquivo se não existir, ou sobrescreve se existir.
+ * Cria o arquivo se não existir ou sobrescreve se existir.
  */
 internal fun escreverArquivo(caminhoDoArquivo: String, conteudo: String) {
     val arquivo = File(caminhoDoArquivo)
@@ -36,7 +36,7 @@ internal fun escreverArquivo(caminhoDoArquivo: String, conteudo: String) {
         arquivo.parentFile?.mkdirs()
     } catch (e: SecurityException) {
         println("ERRO: Sem permissão para criar diretórios para: $caminhoDoArquivo")
-        return // Sai da função se não puder criar o diretório
+        return
     }
 
     // Tenta escrever o arquivo
