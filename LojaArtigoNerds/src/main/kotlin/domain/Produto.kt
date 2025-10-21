@@ -1,4 +1,4 @@
-package org.example
+package domain
 
 open class Produto {
     var nome: String = ""

@@ -1,4 +1,4 @@
-import org.example.Produto
+package domain
 
 data class ItemEstoque(
     val produto: Produto,

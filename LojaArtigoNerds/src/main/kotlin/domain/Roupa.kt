@@ -1,4 +1,4 @@
-package org.example
+package domain
 
 class Roupa : Produto() {
     enum class Tipo
