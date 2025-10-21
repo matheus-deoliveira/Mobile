@@ -18,7 +18,7 @@ fun main (args: Array<String>){
     val caminhoCompras = "$pastaEntrada/compras.csv"
     val caminhoVendas = "$pastaEntrada/vendas.csv"
 
-    // --- Processamento de Compras ---
+    // Processamento de Compras
     logDebug("\nLendo arquivo de compras em: $caminhoCompras")
     val linhasCompras = lerArquivoCsv (caminhoCompras)
     var produtosComprados: List<Pair<org.example.Produto, Int>> = emptyList()
@@ -30,27 +30,26 @@ fun main (args: Array<String>){
         logDebug("-> Arquivo de compras vazio ou não encontrado.")
     }
 
-    // --- Processamento de Vendas ---
+    // Processamento de Vendas
     logDebug("\nLendo arquivo de vendas em: $caminhoVendas")
     val linhasVendas : List<String> = lerArquivoCsv (caminhoVendas)
     if (linhasVendas.isNotEmpty()) {
         logDebug("-> Sucesso! ${linhasVendas.size - 1} registros de vendas encontrados.")
     }
 
-    // 1. Gerenciamento de Compra e Venda
+    // Gerenciamento de Compra e Venda
     logDebug("\nConsolidando estoque a partir de compras e vendas...")
     estoque = consolidarEstoque(produtosComprados, linhasVendas)
 
     estoque.forEach { (codigo, item) ->
         logDebug("   - [$codigo] ${item.produto.nome}: ${item.quantidade} unidades")
     }
-    logDebug("-----------------------------------\n")
-    // --- FIM DA MODIFICAÇÃO ---
 
+    // Gerenciamento de Estoque
+    salvarEstoqueConsolidado(estoque, pastaSaida)
 
-    // TODO: 2. Gerenciamento de Estoque (Geração de arquivos)
-    // TODO: 3. Balancete da Loja
-    // TODO: 4. Sistema de Busca (Opcional)
+    // TODO: Balancete da Loja
+    // TODO: Sistema de Busca
 }
 
 /**
@@ -87,4 +86,53 @@ private fun lerArquivoCsv(caminhoDoArquivo: String): List<String> {
         println("ERRO: Ocorreu um erro inesperado ao ler o arquivo: ${e.message}")
         emptyList()
     }
+}
+
+/**
+ * Escreve um conteúdo de string em um arquivo no caminho especificado.
+ * Cria o arquivo se não existir, ou sobrescreve se existir.
+ */
+private fun escreverArquivo(caminhoDoArquivo: String, conteudo: String){
+    val arquivo = File(caminhoDoArquivo)
+
+    try {
+        arquivo.parentFile.mkdirs()
+    } catch (e: SecurityException) {
+        println("ERRO: Sem permissão para criar diretórios para: $caminhoDoArquivo")
+        return
+    }
+
+    try {
+        arquivo.writeText(conteudo)
+    } catch (e: SecurityException) {
+        println("ERRO: Sem permissão para escrever o arquivo: ${e.message}")
+    } catch (e: Exception) {
+        println("ERRO: Ocorreu um erro inesperado ao escrever o arquivo: ${e.message}")
+    }
+}
+
+/**
+ * Pega o mapa de estoque consolidado e o salva em um arquivo CSV
+ * no formato: codigo,nome,quantidade
+ */
+private fun salvarEstoqueConsolidado(estoque: Map<String, ItemEstoque>, pastaSaida: String) {
+    logDebug("\nGerando arquivo de estoque consolidado...")
+
+    // Define o cabeçalho do CSV
+    val header = "codigo,nome,quantidade"
+
+    // Mapeia cada entrada do mapa para uma linha do CSV
+    // Sobre o "código modificado", estou assumindo que é o código-chave do mapa.
+    val linhasCsv = estoque.map { (codigo, item) ->
+        "${codigo},${item.produto.nome},${item.quantidade}"
+    }
+
+    // 3. Junta o cabeçalho e as linhas com quebras de linha
+    val conteudoCompleto = (listOf(header) + linhasCsv).joinToString("\n")
+
+    // 4. Define o caminho do arquivo de saída e salva
+    val caminhoArquivoSaida = "$pastaSaida/estoque_geral.csv"
+    escreverArquivo(caminhoArquivoSaida, conteudoCompleto)
+
+    logDebug("-> Estoque consolidado salvo com sucesso em: $caminhoArquivoSaida")
 }

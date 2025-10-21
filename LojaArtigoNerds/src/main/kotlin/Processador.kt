@@ -16,7 +16,7 @@ private fun String.semAcentos(): String {
  * Se o valor for "-", retorna null.
  * Também aplica as regras de maiúsculo e remoção de acentos.
  */
-private fun processarCampoOpcional(valor: String): String? {
+private fun processarCampoVazio(valor: String): String? {
     val valorProcessado = valor.uppercase().semAcentos()
     return if (valorProcessado == "-") null else valorProcessado
 }
@@ -38,7 +38,7 @@ private fun String.paraEnum(): String {
     return this.semAcentos().uppercase().replace("-", "_")
 }
 
-// --- Funções Principais de Parsing ---
+// Funções Principais de Parsing
 
 /**
  * Processa a lista de linhas do CSV de compras.
@@ -61,7 +61,6 @@ private fun parseLinhaCompra(csvLine: String): Pair<Produto, Int> {
     // Regra: Transformar entradas para maiúsculo
     val campos = csvLine.uppercase().split(",")
 
-    // --- Colunas Comuns (Baseado nos seus logs de erro) ---
     // [0]CODIGO, [1]QUANTIDADE, [2]NOME, [3]PRECO_COMPRA, [4]PRECO_VENDA, [5]CATEGORIA
     val codigoOriginal = campos[0]
     val quantidade = campos[1].toInt()
@@ -84,7 +83,7 @@ private fun parseLinhaCompra(csvLine: String): Pair<Produto, Int> {
                 this.tipo = Roupa.Tipo.valueOf(campos[6].paraEnum())
                 this.tamanho = Roupa.Tamanho.valueOf(campos[7].paraEnum())
                 this.corPrimaria = campos[8].semAcentos()
-                this.corSecundaria = processarCampoOpcional(campos[9])
+                this.corSecundaria = processarCampoVazio(campos[9])
             }
         }
         "ELETRONICO" -> {
@@ -98,8 +97,7 @@ private fun parseLinhaCompra(csvLine: String): Pair<Produto, Int> {
 
                 // Atributos específicos
                 this.tipo = Eletronico.Tipo.valueOf(campos[6].paraEnum())
-                this.versao = processarCampoOpcional(campos[10]) ?: ""
-                // CORREÇÃO: Usando processarCampoNumerico
+                this.versao = processarCampoVazio(campos[10]) ?: ""
                 this.anoDeFabricacao = processarCampoNumerico(campos[11])
             }
         }
@@ -115,7 +113,6 @@ private fun parseLinhaCompra(csvLine: String): Pair<Produto, Int> {
                 // Atributos específicos
                 this.tipo = Colecionavel.Tipo.valueOf(campos[6].paraEnum())
                 this.materialFabricacao = Colecionavel.MaterialFabricacao.valueOf(campos[12].paraEnum())
-                // CORREÇÃO: Usando processarCampoNumerico
                 this.tamanhoEmCentimetros = processarCampoNumerico(campos[7])
                 this.relevancia = Colecionavel.Relevancia.valueOf(campos[13].paraEnum())
             }
@@ -138,7 +135,7 @@ fun consolidarEstoque(
 
     val estoque = mutableMapOf<String, ItemEstoque>()
 
-    // 1. Processar todas as Compras
+    // Processar todas as Compras
     logDebug("LOG: Processando ${compras.size} registros de compra...")
     for ((produto, quantidadeComprada) in compras) {
         val chave = produto.codigoFormatado
@@ -152,7 +149,7 @@ fun consolidarEstoque(
     }
     logDebug("LOG: Compras processadas. ${estoque.size} produtos únicos no estoque (antes das vendas).")
 
-    // 2. Processar todas as Vendas
+    // Processar todas as Vendas
     logDebug("LOG: Processando ${linhasVendas.size - 1} registros de venda...")
     for (linhaVenda in linhasVendas.drop(1)) { // Pula o cabeçalho
         try {
