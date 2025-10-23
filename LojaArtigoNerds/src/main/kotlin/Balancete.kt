@@ -61,7 +61,7 @@ class Balancete {
             val arquivoFinal = File(diretorio, "balancete.csv")
             arquivoFinal.writeText(conteudoCsv, Charsets.UTF_8)
 
-            logDebug("Relatório 'balancete.csv' (sumarizado) gerado com sucesso em: ${arquivoFinal.absolutePath}")
+            logDebug("Relatório 'balancete.csv' gerado com sucesso em: ${arquivoFinal.absolutePath}")
 
         } catch (e: IOException) {
             logDebug("Erro de E/S ao escrever o arquivo: ${e.message}")

@@ -47,7 +47,7 @@ fun main (args: Array<String>){
     gerenciadorEstoque.salvarEstoqueGeral(estoque, pastaSaida)
 
     // Gerenciamento de Estoque por Categoria
-    gerenciadorEstoque.salvarEstoquePorCategoria(estoque, pastaSaida)
+    gerenciadorEstoque.salvarEstoquePorCategoria(estoque, produtosComprados, pastaSaida)
 
     // Balancete da Loja
     balancete.balancete(produtosComprados, produtosVendidos, pastaSaida)

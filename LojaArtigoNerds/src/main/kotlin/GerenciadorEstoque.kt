@@ -80,35 +80,57 @@ class GerenciadorEstoque {
         logDebug("Estoque salvo salvo com sucesso em: $caminhoArquivoSaida")
     }
 
-    fun salvarEstoquePorCategoria(estoque: Map<String, ItemEstoque>, pastaSaida: String) {
+    fun salvarEstoquePorCategoria(
+        estoque: Map<String, ItemEstoque>,
+        compras: List<Pair<Produto, Int>>,
+        pastaSaida: String
+    ) {
         logDebug("\nGerando arquivo de estoque por categoria")
 
-        val header = "categoria,quantidade"
+        val header = "CATEGORIA,QUANTIDADE"
 
-        var colecionavelQuantidade = 0
-        var roupaQuantidade = 0
-        var eletronicoQuantidade = 0
+        // Usando um LinkedHashSet para manter a ordem de inserção
+        val ordemCategorias = LinkedHashSet<String>()
 
-        for(item in estoque.values) {
-            when(item.produto) {
-                is Colecionavel -> colecionavelQuantidade += item.quantidade
-                is Roupa -> roupaQuantidade += item.quantidade
-                is Eletronico -> eletronicoQuantidade += item.quantidade
-                else -> throw IllegalArgumentException("Produto desconhecido: ${item.produto}")
+        // Iterando na lista de compras original para pegar a ordem
+        for ((produto, _) in compras) {
+            when (produto) {
+                is Roupa -> ordemCategorias.add("ROUPA")
+                is Colecionavel -> ordemCategorias.add("COLECIONAVEL")
+                is Eletronico -> ordemCategorias.add("ELETRONICO")
             }
         }
 
-        val linhasCsv = listOf(
-            "COLECIONAVEL,${colecionavelQuantidade}",
-            "ROUPA,${roupaQuantidade}",
-            "ELETRONICO,${eletronicoQuantidade}"
+        logDebug("Ordem das categorias determinada: $ordemCategorias")
+
+        val totaisPorCategoria = mutableMapOf(
+            "ROUPA" to 0,
+            "COLECIONAVEL" to 0,
+            "ELETRONICO" to 0
         )
 
-        // Junta o cabeçalho e as linhas com quebras de linha
-        val conteudoCompleto = (listOf(header) + linhasCsv).joinToString("\n")
+        // Itera no estoque final para somar as quantidades
+        for (item in estoque.values) {
+            when (item.produto) { //
+                is Colecionavel -> totaisPorCategoria["COLECIONAVEL"] = totaisPorCategoria["COLECIONAVEL"]!! + item.quantidade //
+                is Roupa -> totaisPorCategoria["ROUPA"] = totaisPorCategoria["ROUPA"]!! + item.quantidade //
+                is Eletronico -> totaisPorCategoria["ELETRONICO"] = totaisPorCategoria["ELETRONICO"]!! + item.quantidade //
+                else -> throw IllegalArgumentException("Produto desconhecido: ${item.produto}")
+            }
+        }
+        logDebug("Totais calculados: $totaisPorCategoria")
 
-        // Define o caminho do arquivo de saída e salva
+        val linhasCsv = mutableListOf<String>()
+
+        // Itera na lista ordenada de categorias
+        for (categoria in ordemCategorias) {
+            val quantidade = totaisPorCategoria[categoria] ?: 0
+            linhasCsv.add("$categoria,$quantidade")
+        }
+
+        val conteudoCompleto = (listOf(header) + linhasCsv).joinToString("\n")
         val caminhoArquivoSaida = "$pastaSaida/estoque_categorias.csv"
+
         escreverArquivo(caminhoArquivoSaida, conteudoCompleto)
 
         logDebug("Estoque salvo salvo com sucesso em: $caminhoArquivoSaida")
