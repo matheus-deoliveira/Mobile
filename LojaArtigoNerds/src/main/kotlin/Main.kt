@@ -12,6 +12,7 @@ fun main (args: Array<String>){
     val processadorVendas = ProcessadorVendas()
     val gerenciadorEstoque = GerenciadorEstoque()
     val balancete = Balancete()
+    val busca = Busca()
 
     // Para depuração, vamos imprimir o diretório de trabalho atual
     logDebug("Diretório de Trabalho Atual: ${System.getProperty("user.dir")}")
@@ -48,10 +49,29 @@ fun main (args: Array<String>){
     // Gerenciamento de Estoque por Categoria
     gerenciadorEstoque.salvarEstoquePorCategoria(estoque, pastaSaida)
 
-    //Balancete da Loja
+    // Balancete da Loja
     balancete.balancete(produtosComprados, produtosVendidos, pastaSaida)
 
-    // TODO: Sistema de Busca
+    // Preciso ler o e fazer a busca somente se busca.csv estiver no diretório de entrada
+
+    // Sistema de Busca
+
+    val caminhoBusca = "$pastaEntrada/busca.csv"
+
+    val arquivoBusca = java.io.File(caminhoBusca)
+
+    // Verifica se o arquivo realmente existe e é um arquivo (não uma pasta)
+    if (arquivoBusca.exists() && arquivoBusca.isFile) {
+
+        logDebug("\nArquivo 'busca.csv' encontrado. Iniciando sistema de busca...")
+
+        val linhasBusca = lerArquivoCsv(caminhoBusca)
+
+        busca.realizarBusca(linhasBusca, estoque, pastaSaida)
+
+    } else {
+        logDebug("\nArquivo 'busca.csv' não encontrado em '$pastaEntrada'. Pulando etapa de busca.")
+    }
 }
 
 /**
