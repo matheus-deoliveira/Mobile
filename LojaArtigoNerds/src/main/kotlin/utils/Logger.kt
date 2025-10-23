@@ -1,4 +1,4 @@
-package org.example
+package utils
 
 /**
  * Constante global para controlar os logs de depuração de todo o projeto.

@@ -1,4 +1,4 @@
-import org.example.logDebug
+import utils.logDebug
 
 class ProcessadorVendas {
 

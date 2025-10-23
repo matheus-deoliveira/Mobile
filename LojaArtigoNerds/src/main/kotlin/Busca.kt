@@ -3,7 +3,8 @@ import domain.Eletronico
 import domain.ItemEstoque
 import domain.Produto
 import domain.Roupa
-import org.example.logDebug
+import utils.logDebug
+import utils.escreverArquivo
 
 class Busca {
 

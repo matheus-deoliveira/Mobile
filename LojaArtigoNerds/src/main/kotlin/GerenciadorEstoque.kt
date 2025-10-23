@@ -3,7 +3,8 @@ import domain.Eletronico
 import domain.ItemEstoque
 import domain.Produto
 import domain.Roupa
-import org.example.logDebug
+import utils.logDebug
+import utils.escreverArquivo
 
 class GerenciadorEstoque {
     /**
@@ -111,10 +112,10 @@ class GerenciadorEstoque {
 
         // Itera no estoque final para somar as quantidades
         for (item in estoque.values) {
-            when (item.produto) { //
-                is Colecionavel -> totaisPorCategoria["COLECIONAVEL"] = totaisPorCategoria["COLECIONAVEL"]!! + item.quantidade //
-                is Roupa -> totaisPorCategoria["ROUPA"] = totaisPorCategoria["ROUPA"]!! + item.quantidade //
-                is Eletronico -> totaisPorCategoria["ELETRONICO"] = totaisPorCategoria["ELETRONICO"]!! + item.quantidade //
+            when (item.produto) {
+                is Colecionavel -> totaisPorCategoria["COLECIONAVEL"] = totaisPorCategoria["COLECIONAVEL"]!! + item.quantidade
+                is Roupa -> totaisPorCategoria["ROUPA"] = totaisPorCategoria["ROUPA"]!! + item.quantidade
+                is Eletronico -> totaisPorCategoria["ELETRONICO"] = totaisPorCategoria["ELETRONICO"]!! + item.quantidade
                 else -> throw IllegalArgumentException("Produto desconhecido: ${item.produto}")
             }
         }

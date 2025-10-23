@@ -1,6 +1,7 @@
 import domain.ItemEstoque
 import domain.Produto
-import org.example.logDebug
+import utils.logDebug
+import utils.lerArquivoCsv
 import kotlin.system.exitProcess
 
 private lateinit var estoque: Map<String, ItemEstoque>
@@ -24,14 +25,14 @@ fun main (args: Array<String>){
 
     // Processamento de Compras
     logDebug("\nLendo arquivo de compras em: $caminhoCompras")
-    val linhasCompras = lerArquivoCsv (caminhoCompras)
+    val linhasCompras = lerArquivoCsv(caminhoCompras)
     var produtosComprados: List<Pair<Produto, Int>> = emptyList()
 
     produtosComprados = processadorCompras.processarCompras(linhasCompras)
 
     // Processamento de Vendas
     logDebug("\nLendo arquivo de vendas em: $caminhoVendas")
-    val linhasVendas : List<String> = lerArquivoCsv (caminhoVendas)
+    val linhasVendas : List<String> = lerArquivoCsv(caminhoVendas)
     var produtosVendidos: List<Pair<String, Int>> = emptyList()
 
     produtosVendidos = processadorVendas.processarVendas(linhasVendas)

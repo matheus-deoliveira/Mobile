@@ -2,7 +2,11 @@ import domain.Colecionavel
 import domain.Eletronico
 import domain.Produto
 import domain.Roupa
-import org.example.logDebug
+import utils.logDebug
+import utils.paraEnum
+import utils.processarCampoNumerico
+import utils.processarCampoOpcional
+import utils.semAcentos
 
 class ProcessadorCompras {
     /**
