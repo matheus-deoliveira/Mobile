@@ -11,6 +11,7 @@ fun main (args: Array<String>){
     val processadorCompras = ProcessadorCompras()
     val processadorVendas = ProcessadorVendas()
     val gerenciadorEstoque = GerenciadorEstoque()
+    val balancete = Balancete()
 
     // Para depuração, vamos imprimir o diretório de trabalho atual
     logDebug("Diretório de Trabalho Atual: ${System.getProperty("user.dir")}")
@@ -47,7 +48,9 @@ fun main (args: Array<String>){
     // Gerenciamento de Estoque por Categoria
     gerenciadorEstoque.salvarEstoquePorCategoria(estoque, pastaSaida)
 
-    // TODO: Balancete da Loja
+    //Balancete da Loja
+    balancete.balancete(produtosComprados, produtosVendidos, pastaSaida)
+
     // TODO: Sistema de Busca
 }
 
