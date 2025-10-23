@@ -9,11 +9,11 @@ class Busca {
 
     /**
      * Processa um arquivo de filtros (busca.csv) contra o estoque existente.
-     * Salva um RELATÓRIO DE CONTAGEM em "busca_resultado.csv".
+     * Salva um resultado_busca em "resultado_busca.csv".
      *
      * @param linhasBusca O conteúdo bruto do 'busca.csv' (incluindo cabeçalho).
      * @param estoque O mapa de estoque consolidado.
-     * @param pastaSaida A pasta onde o 'busca_resultado.csv' será salvo.
+     * @param pastaSaida A pasta onde o 'resultado_busca.csv' será salvo.
      */
     fun realizarBusca(
         linhasBusca: List<String>,
@@ -27,7 +27,6 @@ class Busca {
         // Lista que guardará os resultados
         val resultadosContagem = mutableListOf<String>()
 
-        // Lógica INVERTIDA: Iteramos primeiro por cada filtro
         for ((index, linhaFiltro) in linhasDeFiltro.withIndex()) {
 
             val filtroNumero = index + 1 // Para o relatório (Filtro 1, Filtro 2, ...)
@@ -42,7 +41,7 @@ class Busca {
                 continue
             }
 
-            // Agora, para este filtro, iteramos por TODO o estoque
+            // Agora, para este filtro, iteramos pelo estoque
             for (itemEstoque in estoque.values) {
                 val produto = itemEstoque.produto
 
@@ -53,7 +52,7 @@ class Busca {
                 }
             }
 
-            // Após testar o filtro contra todo o estoque, salvamos o resultado
+            // Após testar o filtro contra o estoque, salvamos o resultado
             resultadosContagem.add("$filtroNumero,$matchCount")
             logDebug("   - Filtro $filtroNumero encontrou $matchCount itens.")
         }
@@ -66,8 +65,6 @@ class Busca {
 
     /**
      * Verifica se um único produto corresponde a uma única linha de critérios do busca.csv.
-     *
-     * ESTA FUNÇÃO NÃO MUDA. É A MESMA LÓGICA DE ANTES.
      */
     private fun produtoMatchesCriterios(produto: Produto, criterios: List<String>): Boolean { //
         val catFiltro = criterios[0]
@@ -80,32 +77,35 @@ class Busca {
         val matFiltro = criterios[7]
         val relFiltro = criterios[8]
 
-        // 1. Filtro de Categoria
+        // Filtro de Categoria
         if (catFiltro != "-") {
             if (catFiltro.equals("colecionavel", true) && produto !is Colecionavel) return false //
             if (catFiltro.equals("roupa", true) && produto !is Roupa) return false //
             if (catFiltro.equals("eletronico", true) && produto !is Eletronico) return false //
         }
 
-        // 2. Filtros Específicos por Atributo
+        // Filtros Específicos por Atributo
         when (produto) {
-            is Colecionavel -> { //
+            is Colecionavel -> {
                 if (tipoFiltro != "-" || tamFiltro != "-" || cor1Filtro != "-" || cor2Filtro != "-") return false // Filtros de Roupa
                 if (verFiltro != "-" || anoFiltro != "-") return false // Filtros de Eletronico
+
                 if (matFiltro != "-" && !produto.materialFabricacao.name.equals(matFiltro, true)) return false
                 if (relFiltro != "-" && !produto.relevancia.name.equals(relFiltro, true)) return false
             }
-            is Roupa -> { //
+            is Roupa -> {
                 if (matFiltro != "-" || relFiltro != "-") return false // Filtros de Colecionavel
                 if (verFiltro != "-" || anoFiltro != "-") return false // Filtros de Eletronico
+
                 if (tipoFiltro != "-" && !produto.tipo.name.equals(tipoFiltro, true)) return false
                 if (tamFiltro != "-" && !produto.tamanho.name.equals(tamFiltro, true)) return false
                 if (cor1Filtro != "-" && !produto.corPrimaria.equals(cor1Filtro, true)) return false
                 if (cor2Filtro != "-" && !produto.corSecundaria.equals(cor2Filtro, true)) return false
             }
-            is Eletronico -> { //
+            is Eletronico -> {
                 if (tipoFiltro != "-" || tamFiltro != "-" || cor1Filtro != "-" || cor2Filtro != "-") return false // Filtros de Roupa
                 if (matFiltro != "-" || relFiltro != "-") return false // Filtros de Colecionavel
+
                 if (verFiltro != "-" && !produto.versao.equals(verFiltro, true)) return false
                 if (anoFiltro != "-" && produto.anoDeFabricacao != anoFiltro.toIntOrNull()) return false
             }
@@ -114,7 +114,7 @@ class Busca {
     }
 
     /**
-     * Salva o RELATÓRIO DE CONTAGEM no formato "BUSCAS,QUANTIDADE".
+     * Salva o resultado_busca no formato "BUSCAS,QUANTIDADE".
      */
     private fun salvarRelatorioBusca(
         resultados: List<String>,
@@ -125,8 +125,7 @@ class Busca {
         // Junta o cabeçalho ("BUSCAS,QUANTIDADE") com as linhas de resultado
         val conteudoCompleto = (listOf(header) + resultados).joinToString("\n")
 
-        // O nome do arquivo pode ser o mesmo
-        val caminhoArquivoSaida = "$pastaSaida/busca_resultado.csv"
+        val caminhoArquivoSaida = "$pastaSaida/resultado_busca.csv"
 
         escreverArquivo(caminhoArquivoSaida, conteudoCompleto)
 
