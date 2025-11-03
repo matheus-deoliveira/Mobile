@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">PrimeiroAplicativo</string>
+    <string name="salarioEditView">Salário (R$)</string>
+    <string name="salarioTextView">Salário Mensal</string>
+    <string name="gastosEditText">Gastos (R$)</string>
+    <string name="gastosTextView">Gastos com saúde e educação</string>
+    <string name="dependentesEditText">Dependentes</string>
+    <string name="dependentesTextView">Número de dependentes</string>
+    <string name="impostoTextView">SEU IMPOSTO DE RENDA MENSAL:</string>
+    <string name="impostoValueTextView">R$ 0</string>
+    <string name="calcularButton">CALCULAR</string>
+</resources>
