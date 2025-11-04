@@ -9,4 +9,5 @@
     <string name="impostoTextView">SEU IMPOSTO DE RENDA MENSAL:</string>
     <string name="impostoValueTextView">R$ 0</string>
     <string name="calcularButton">CALCULAR</string>
+    <string name="erro_calculo">Deu erro no cálculo de imposto</string>
 </resources>
