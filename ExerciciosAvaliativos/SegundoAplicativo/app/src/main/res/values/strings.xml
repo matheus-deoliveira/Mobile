@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">SegundoAplicativo</string>
+    <string name="ola_visitante">Olá, Visitante!</string>
+    <string name="lorem">Lorem ipsum dolor sit amet consectetur adipiscing elit quisque faucibus ex sapien vitae pellentesque sem placerat in id cursus mi pretium tellus duis convallis tempus leo eu aenean sed.</string>
+    <string name="gerar_outra_frase">GERAR OUTRA FRASE</string>
 </resources>
