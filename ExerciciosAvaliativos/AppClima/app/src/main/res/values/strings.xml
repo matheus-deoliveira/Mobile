@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">AppClima</string>
+    <string name="cidade">Cidade</string>
+    <string name="feels_like">31ºC, ensolarado</string>
+    <string name="max_temperature">Temperatura máx: 33 ºC</string>
+    <string name="min_temperature">Temperatura mín: 24 ºC</string>
+    <string name="feels_like_temperature">Sensação térmica: 36 ºC</string>
+    <string name="wind_velocity">Velocidade do vento: 33 km/h</string>
+    <string name="air_humidity">Humidade do ar: 61%</string>
+    <string name="image_description">Imagem representando como está o tempo</string>
+    <string name="report_prevision">Relatório de Previsão</string>
 </resources>
