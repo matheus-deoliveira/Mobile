@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import coil.load
 import com.example.appclima.databinding.ActivityReportScreenBinding
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -79,6 +80,19 @@ class ReportScreenActivity : AppCompatActivity() {
         val descricao = data.weather.firstOrNull()?.description?.replaceFirstChar {
             if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
         } ?: "N/A"
+
+        val weatherInfo = data.weather.firstOrNull()
+
+        val iconCode = weatherInfo?.icon
+        if (iconCode != null) {
+            // Monta a URL completa da imagem (usando @2x.png para qualidade melhor)
+            val iconUrl = "https://openweathermap.org/img/wn/$iconCode@2x.png"
+
+            // Usa a Coil para carregar a imagem da URL no seu ImageView
+            binding.stateImage.load(iconUrl) {
+                crossfade(true) // Adiciona um efeito suave de transição
+            }
+        }
 
         // Atualiza os TextViews do seu layout
         binding.nomeCidade.text = data.cityName
