@@ -25,17 +25,12 @@ class SearchScreenActivity : AppCompatActivity(), View.OnClickListener {
             insets
         }
 
-        sharedPreferences = getSharedPreferences("nome_cidade", MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences("AppClimaPrefs", MODE_PRIVATE)
 
         binding = ActivitySearchScreenBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.buttonPrevisao.setOnClickListener(this)
-
-        if (sharedPreferences.contains("nome_cidade")) {
-            val intent = Intent(this, ReportScreenActivity::class.java)
-            startActivity(intent)
-        }
     }
 
     override fun onClick(v: View) {
