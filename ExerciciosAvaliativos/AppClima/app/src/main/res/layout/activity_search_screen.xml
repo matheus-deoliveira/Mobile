@@ -5,7 +5,7 @@
     android:id="@+id/activity_search_screen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SearchScreenActivity">
+    tools:context=".view.SearchScreenActivity">
 
     <ImageView
         android:id="@+id/logo_app"
