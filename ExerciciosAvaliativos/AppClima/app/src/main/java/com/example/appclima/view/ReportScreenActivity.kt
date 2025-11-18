@@ -21,7 +21,6 @@ class ReportScreenActivity : AppCompatActivity() {
     private lateinit var binding: ActivityReportScreenBinding
     private lateinit var sharedPreferences: SharedPreferences
 
-    // Inicialização do ViewModel
     private val viewModel: ReportViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +31,7 @@ class ReportScreenActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupLayout()
-        setupObservers() // Configura os observadores do MVVM
+        setupObservers()
 
         // Lógica de carregar a cidade
         sharedPreferences = getSharedPreferences("AppClimaPrefs", MODE_PRIVATE)
@@ -41,7 +40,6 @@ class ReportScreenActivity : AppCompatActivity() {
         Log.d("ReportScreenActivity", "Cidade lida do SharedPreferences: $cidadeSalva")
 
         if (cidadeSalva.isNotEmpty()) {
-            // A Activity pede para o ViewModel buscar os dados
             viewModel.fetchWeatherData(cidadeSalva)
         } else {
             binding.nomeCidade.text = "Nenhuma cidade selecionada"
@@ -59,24 +57,15 @@ class ReportScreenActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        // 1. Observa os DADOS DE SUCESSO
         viewModel.weatherData.observe(this) { weatherResponse ->
             updateUI(weatherResponse)
         }
 
-        // 2. Observa os ERROS
         viewModel.errorMessage.observe(this) { msg ->
             Log.e("ReportScreenActivity", msg)
             binding.nomeCidade.text = "Erro ao carregar"
             binding.stateText.text = "Verifique conexão/cidade"
             Toast.makeText(this, "Falha: $msg", Toast.LENGTH_LONG).show()
-        }
-
-        // 3. Observa o LOADING (Opcional, se quiser adicionar um ProgressBar no futuro)
-        viewModel.isLoading.observe(this) { isLoading ->
-            if (isLoading) {
-                binding.nomeCidade.text = "Carregando..."
-            }
         }
     }
 

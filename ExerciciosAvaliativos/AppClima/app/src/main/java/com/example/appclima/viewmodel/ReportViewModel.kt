@@ -30,7 +30,6 @@ class ReportViewModel : ViewModel() {
                 val apiService = RetrofitClient.instance
                 val response = apiService.getCurrentWeather(cityName, API_KEY)
 
-                // Sucesso: postamos o valor para a Activity observar
                 _weatherData.value = response
 
             } catch (e: Exception) {

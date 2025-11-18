@@ -36,7 +36,7 @@ class SearchScreenActivity : AppCompatActivity(), View.OnClickListener {
 
         binding.buttonPrevisao.setOnClickListener {
             val cidade = binding.nomeCidade.text.toString()
-            // A Activity NÃO decide mais, ela manda o ViewModel validar
+
             viewModel.validarCidade(cidade)
         }
     }
@@ -55,19 +55,19 @@ class SearchScreenActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setupObservers() {
-        // Se o ViewModel disser que deu erro:
+
         viewModel.mensagemErro.observe(this) { msg ->
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
             binding.nomeCidade.error = "Campo obrigatório"
         }
 
-        // Se o ViewModel disser que a cidade é válida:
         viewModel.cidadeEncontrada.observe(this) { cidadeValidada ->
             salvarENavegar(cidadeValidada)
         }
     }
 
     private fun salvarENavegar(cidade: String) {
+
         val edit = sharedPreferences.edit()
         edit.putString("nome_cidade", cidade)
         edit.apply()
