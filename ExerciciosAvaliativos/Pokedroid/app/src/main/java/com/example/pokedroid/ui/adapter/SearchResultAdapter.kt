@@ -2,34 +2,28 @@ package com.example.pokedroid.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.paging.PagingData
-import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.pokedroid.data.model.PokemonResult
 import com.example.pokedroid.databinding.ItemPokemonBinding
 
-class PokemonAdapter(
+class SearchResultAdapter(
     private val onClick: (PokemonResult) -> Unit
-) : PagingDataAdapter<PokemonResult, PokemonAdapter.PokemonViewHolder>(PokemonDiffCallback()) {
+) : ListAdapter<PokemonResult, SearchResultAdapter.SearchResultViewHolder>(PokemonDiffCallback()) {
 
-    // Corrigido: Função agora é suspend para chamar a versão correta de submitData
-    suspend fun submitListAsList(list: List<PokemonResult>?) {
-        submitData(PagingData.from(list ?: emptyList()))
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokemonViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchResultViewHolder {
         val binding = ItemPokemonBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return PokemonViewHolder(binding)
+        return SearchResultViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: PokemonViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: SearchResultViewHolder, position: Int) {
         val pokemon = getItem(position)
-        pokemon?.let { holder.bind(it, onClick) }
+        holder.bind(pokemon, onClick)
     }
 
-    class PokemonViewHolder(private val binding: ItemPokemonBinding) : RecyclerView.ViewHolder(binding.root) {
+    class SearchResultViewHolder(private val binding: ItemPokemonBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(pokemon: PokemonResult, onClick: (PokemonResult) -> Unit) {
             binding.tvPokemonName.text = pokemon.name.replaceFirstChar { it.uppercase() }
 

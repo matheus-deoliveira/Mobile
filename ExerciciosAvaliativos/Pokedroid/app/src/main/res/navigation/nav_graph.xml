@@ -3,12 +3,50 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/pokemonListFragment">
+    app:startDestination="@id/searchFragment">
+
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.pokedroid.ui.fragments.SearchFragment"
+        android:label="Buscar Pokémon"
+        tools:layout="@layout/fragment_search">
+        <action
+            android:id="@+id/action_searchFragment_to_pokemonListFragment"
+            app:destination="@id/pokemonListFragment" />
+        <!-- Ação para a nova tela de resultados -->
+        <action
+            android:id="@+id/action_searchFragment_to_searchResultFragment"
+            app:destination="@id/searchResultFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/pokemonListFragment"
         android:name="com.example.pokedroid.ui.fragments.PokemonListFragment"
-        android:label="fragment_pokemon_list"
+        android:label="Pokédex"
         tools:layout="@layout/fragment_pokemon_list" />
+
+    <fragment
+        android:id="@+id/pokemonDetailFragment"
+        android:name="com.example.pokedroid.ui.fragments.PokemonDetailFragment"
+        android:label="Detalhes do Pokémon"
+        tools:layout="@layout/fragment_pokemon_detail">
+        <argument
+            android:name="pokemonName"
+            app:argType="string" />
+    </fragment>
+
+    <!-- Nova tela de resultados da busca -->
+    <fragment
+        android:id="@+id/searchResultFragment"
+        android:name="com.example.pokedroid.ui.fragments.SearchResultFragment"
+        android:label="Resultados para '{query}'"
+        tools:layout="@layout/fragment_search_result">
+        <argument
+            android:name="query"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_searchResultFragment_to_pokemonDetailFragment"
+            app:destination="@id/pokemonDetailFragment" />
+    </fragment>
 
 </navigation>
