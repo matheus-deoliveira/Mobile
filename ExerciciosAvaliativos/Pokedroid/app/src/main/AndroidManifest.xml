@@ -13,15 +13,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Pokedroid">
+
+        <!-- SplashActivity é a única tela de entrada -->
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
+            android:name=".ui.view.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Pokedroid.Splash"> <!-- Tema customizado para Splash -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- MainActivity não é mais uma tela de entrada -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

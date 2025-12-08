@@ -6,4 +6,12 @@
     </style>
 
     <style name="Theme.Pokedroid" parent="Base.Theme.Pokedroid" />
+
+    <!-- Tema para a Splash Screen -->
+    <style name="Theme.Pokedroid.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@android:color/white</item>
+        <!-- Apontando para a sua logo -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.Pokedroid</item>
+    </style>
 </resources>
