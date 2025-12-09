@@ -38,4 +38,6 @@
     <color name="stat_sp_defense">#78C850</color>
     <color name="stat_speed">#F85888</color>
     <color name="stat_default">#A8A878</color>
+
+    <color name="splash_background">#f4f0dc</color>
 </resources>
