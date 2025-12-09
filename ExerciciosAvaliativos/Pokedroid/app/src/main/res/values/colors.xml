@@ -30,4 +30,12 @@
 
     <color name="pokedroid_red">#D53B47</color>
     <color name="pokedroid_dark_red">#B02E39</color>
+
+    <color name="stat_hp">#FF0000</color>
+    <color name="stat_attack">#F08030</color>
+    <color name="stat_defense">#F8D030</color>
+    <color name="stat_sp_attack">#6890F0</color>
+    <color name="stat_sp_defense">#78C850</color>
+    <color name="stat_speed">#F85888</color>
+    <color name="stat_default">#A8A878</color>
 </resources>

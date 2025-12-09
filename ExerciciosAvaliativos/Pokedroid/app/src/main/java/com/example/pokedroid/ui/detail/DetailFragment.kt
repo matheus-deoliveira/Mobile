@@ -46,13 +46,13 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 1. Inicializa o ViewModel (Usando o Factory para passar o Repository)
+        // 1. Inicializa o ViewModel
         val repository = ServiceLocator.provideRepository(requireContext())
         val factory = PokemonViewModelFactory(repository)
 
         viewModel = ViewModelProvider(this, factory)[PokemonViewModel::class.java]
 
-        // 2. Observa o estado de favorito (StateFlow)
+        // 2. Observa o estado de favorito
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isFavorite.collect { isFav ->
                 val iconRes = if (isFav) R.drawable.ic_heart_filled else R.drawable.ic_heart_outline
@@ -65,8 +65,7 @@ class DetailFragment : Fragment() {
             viewModel.toggleFavorite()
         }
 
-        // 4. Busca os detalhes do Pokémon (o nome vem dos argumentos)
-        // Nota: args.pokemonName deve bater com o nome do argumento no nav_graph.xml
+        // 4. Busca os detalhes
         viewModel.getPokemonDetail(args.pokemonName)
 
         setupObservers()
@@ -78,10 +77,7 @@ class DetailFragment : Fragment() {
                 is Resource.Success -> {
                     resource.data?.let { detail ->
                         populateUI(detail)
-
-                        // Passa os dados para o ViewModel preparar o objeto de favorito
                         viewModel.setPokemonDataForFavoriting(detail)
-                        // Verifica se este Pokémon já é favorito no banco
                         viewModel.checkFavoriteStatus(detail.id)
                     }
                 }
@@ -102,7 +98,7 @@ class DetailFragment : Fragment() {
             .load(detail.imageUrl)
             .into(binding.ivDetailImage)
 
-        // Configuração dos Chips de Tipo
+        // --- Configuração dos Chips de Tipo ---
         binding.chipGroupTypes.removeAllViews()
         detail.types.forEach { typeName ->
             val chip = Chip(requireContext()).apply {
@@ -115,7 +111,7 @@ class DetailFragment : Fragment() {
             binding.chipGroupTypes.addView(chip)
         }
 
-        // Configuração dos Stats (Barras de progresso)
+        // --- Configuração dos Stats (Barras de progresso Coloridas) ---
         binding.statsContainer.removeAllViews()
         detail.stats.forEach { stat ->
             val statView = LinearLayout(requireContext()).apply {
@@ -127,20 +123,40 @@ class DetailFragment : Fragment() {
             }
 
             val tvLabel = TextView(requireContext()).apply {
+                // Formata o texto (ex: "HP: 45")
                 text = "${stat.name.uppercase()}: ${stat.value}"
                 textSize = 12f
             }
 
             val progress = com.google.android.material.progressindicator.LinearProgressIndicator(requireContext()).apply {
-                max = 200 // Valor máximo estimado para stats de Pokémon
+                max = 200 // Valor máximo estimado
                 this.progress = stat.value
-                trackColor = ContextCompat.getColor(context, R.color.white) // Ajuste a cor se necessário
-                setIndicatorColor(ContextCompat.getColor(context, R.color.black))
+
+                // Track Color (fundo da barra) - Deixei um cinza bem claro para destacar a cor
+                trackColor = ContextCompat.getColor(context, android.R.color.darker_gray)
+                alpha = 1.0f // Opacidade total
+
+                // --- AQUI ESTÁ A MUDANÇA DA COR ---
+                val colorRes = getStatColor(stat.name)
+                setIndicatorColor(ContextCompat.getColor(context, colorRes))
             }
 
             statView.addView(tvLabel)
             statView.addView(progress)
             binding.statsContainer.addView(statView)
+        }
+    }
+
+    // Função auxiliar para pegar a cor baseada no nome do status
+    private fun getStatColor(statName: String): Int {
+        return when (statName.lowercase()) {
+            "hp" -> R.color.stat_hp
+            "attack" -> R.color.stat_attack
+            "defense" -> R.color.stat_defense
+            "special-attack" -> R.color.stat_sp_attack
+            "special-defense" -> R.color.stat_sp_defense
+            "speed" -> R.color.stat_speed
+            else -> R.color.stat_default
         }
     }
 
