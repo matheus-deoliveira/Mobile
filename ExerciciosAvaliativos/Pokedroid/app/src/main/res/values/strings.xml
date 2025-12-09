@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Pokedroid</string>
+    <string name="search_hint">Buscar Pokémon...</string>
+    <string name="weight">Peso</string>
+    <string name="height">Altura</string>
+    <string name="stats">Estatísticas Base</string>
+    <string name="error_loading">Erro ao carregar dados</string>
+    <string name="retry">Tentar Novamente</string>
 </resources>
