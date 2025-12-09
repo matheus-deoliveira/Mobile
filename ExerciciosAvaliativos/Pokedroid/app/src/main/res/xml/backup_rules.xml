@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!--
+    Exclui o diretório de shared preferences do Backup Automático.
+    Isso é útil se você armazena informações sensíveis ou de sessão que não devem ser restauradas.
+    <exclude domain="sharedpref" path="nome_do_arquivo.xml"/>
+    -->
+</full-backup-content>
+    
